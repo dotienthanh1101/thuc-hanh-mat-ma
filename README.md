@@ -15,15 +15,38 @@ python run_vectors.py aes-bai-ghi-1111
 
 Lệnh đầu in cả năm vector ra terminal. Thêm `--save` để ghi lại các log trong `results/`. Mã thoát là 1 nếu một mốc có đáp án bị sai. Có thể thêm vector vào `vectors.json` theo cấu trúc sẵn có. Với DES, mỗi bản rõ và khóa có 16 ký tự hex. Với AES-128, mỗi giá trị có 32 ký tự hex. Đặt các mốc đã biết trong `expected` bằng đúng nhãn dùng trong log.
 
-| Vector | Nguồn | Kết quả nổi bật |
-| --- | --- | --- |
-| [AES tuần 11](results/aes-tuan-11.txt) | Đề bài cho P = 0x11 và K = 0x00 dưới dạng viết rút gọn. Thêm byte 00 bên trái cho đủ 128 bit. | K₁ = `62636363626363636263636362636363`, state cuối vòng 1 = `E0E138D9010000000100000001000000`, bản mã = `0410BEFCCDE6944B69DD007DEBE39A9D`. |
-| [AES tham chiếu](results/aes-fips197.txt) | FIPS 197, bản 2001, Phụ lục C.1 | Bản mã = `69C4E0D86A7B0430D8CDB78070B4C55A`. |
-| [DES tham chiếu](results/des-tham-chieu.txt) | Ví dụ công khai của Lund University. | K₁ = `1B02EFFC7072`, L₁ = `F0AAF0AA`, R₁ = `EF4A6544`, bản mã = `85E813540F0AB405`. |
-| [DES theo ví dụ S-box trong vở](results/des-sbox-bai-ghi.txt) | Vector tự xây dựng để nhóm đầu vào S₁ ở vòng 1 có hàng 1 và cột 11. | P = `0000000000000000`, K = `B0B0B0B0B0B0B0B0`, bản mã = `320CD08D36E0EDFB`. |
-| [AES theo ảnh bài làm](results/aes-bai-ghi-1111.txt) | Hai byte cuối của bản rõ là `11 11`, khóa toàn `00`. | State cuối vòng 1 = `E0E138D9E038D9E10100000001000000`, bản mã = `442758DF6DDA9EDB6BF1468A17B93FE5`. |
+## Kết quả chạy
 
-`vectors.json` lưu các mốc kỳ vọng từ bài tính tay và tài liệu tham chiếu. Bản mã của cả năm vector đã được đối chiếu độc lập bằng OpenSSL. Nhãn PASS chỉ áp dụng cho các mốc có đáp án trong mục Đối chiếu. Phần trên của mỗi log là toàn bộ giá trị chương trình sinh ra.
+### AES-128 tuần 11
+
+Bản rõ kết thúc bằng `00 11`, khóa toàn `00`. Các giá trị AES bên dưới đọc theo cột.
+
+- Khóa con vòng 1  
+  `62636363 62636363 62636363 62636363`
+- Trạng thái cuối vòng 1  
+  `E0E138D9 01000000 01000000 01000000`
+- Bản mã  
+  `0410BEFC CDE6944B 69DD007D EBE39A9D`
+
+[Xem log AES-128 tuần 11](results/aes-tuan-11.txt)
+
+### DES — Ví dụ tra S-box
+
+Cặp bản rõ và khóa được chọn để vòng 1 đưa `010111` vào S₁, tương ứng với hàng 1, cột 11 trong vở. S₁ cho đầu ra `B` (hex).
+
+- Bản rõ `0000000000000000`
+- Khóa `B0B0B0B0B0B0B0B0`
+- Bản mã `320CD08D36E0EDFB`
+
+[Xem log DES](results/des-sbox-bai-ghi.txt)
+
+### Kiểm tra bổ sung
+
+- **AES-128 theo bài ghi** dùng bản rõ kết thúc bằng `11 11`. Trạng thái cuối vòng 1 là `E0E138D9 E038D9E1 01000000 01000000`. Bản mã là `442758DF 6DDA9EDB 6BF1468A 17B93FE5`. [Xem log](results/aes-bai-ghi-1111.txt)
+- **AES-128 theo FIPS 197, Phụ lục C.1** cho bản mã `69C4E0D8 6A7B0430 D8CDB780 70B4C55A`. [Xem log](results/aes-fips197.txt)
+- **DES theo ví dụ của Lund University** cho khóa con vòng 1 `1B02EFFC7072`, hai nửa sau vòng 1 `F0AAF0AA` và `EF4A6544`, bản mã `85E813540F0AB405`. [Xem log](results/des-tham-chieu.txt)
+
+**Kết quả kiểm định** · 35/35 mốc khớp. `vectors.json` lưu giá trị kỳ vọng từ bài tính tay, tài liệu tham chiếu và phép đối chiếu bản mã. Bản mã của cả năm vector đã được đối chiếu độc lập bằng OpenSSL. Nhãn PASS chỉ áp dụng cho các mốc có đáp án trong mục Đối chiếu. Phần trên của mỗi log là toàn bộ giá trị chương trình sinh ra.
 
 ## DES ([des.py](des.py) và [des_tables.py](des_tables.py))
 
