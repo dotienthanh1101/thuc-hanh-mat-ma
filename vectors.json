@@ -1,0 +1,50 @@
+{
+  "aes-tuan-11": {
+    "algorithm": "aes128",
+    "source": "Bài AES tuần 11. P và K được thêm byte 00 bên trái cho đủ 128 bit. Mốc vòng 1 từ bài tính tay, bản mã đối chiếu bằng OpenSSL.",
+    "plaintext": "00000000000000000000000000000011",
+    "key": "00000000000000000000000000000000",
+    "expected": {
+      "r.00.AddRoundKey": "00000000000000000000000000000011",
+      "r.01.K": "62636363626363636263636362636363",
+      "r.01.SubBytes": "63636363636363636363636363636382",
+      "r.01.ShiftRows": "63636382636363636363636363636363",
+      "r.01.MixColumns": "82825BBA636363636363636363636363",
+      "r.01.AddRoundKey": "E0E138D9010000000100000001000000",
+      "ciphertext": "0410BEFCCDE6944B69DD007DEBE39A9D"
+    }
+  },
+  "aes-fips197": {
+    "algorithm": "aes128",
+    "source": "Vector tham chiếu FIPS 197 (bản 2001), Phụ lục C.1.",
+    "plaintext": "00112233445566778899AABBCCDDEEFF",
+    "key": "000102030405060708090A0B0C0D0E0F",
+    "expected": {
+      "r.00.AddRoundKey": "00102030405060708090A0B0C0D0E0F0",
+      "r.01.K": "D6AA74FDD2AF72FADAA678F1D6AB76FE",
+      "r.01.SubBytes": "63CAB7040953D051CD60E0E7BA70E18C",
+      "r.01.ShiftRows": "6353E08C0960E104CD70B751BACAD0E7",
+      "r.01.MixColumns": "5F72641557F5BC92F7BE3B291DB9F91A",
+      "r.01.AddRoundKey": "89D810E8855ACE682D1843D8CB128FE4",
+      "ciphertext": "69C4E0D86A7B0430D8CDB78070B4C55A"
+    }
+  },
+  "des-tham-chieu": {
+    "algorithm": "des",
+    "source": "Vector tham chiếu từ Project 4: Learning about DES. Chưa có dữ liệu để xác nhận ví dụ DES trên bảng.",
+    "plaintext": "0123456789ABCDEF",
+    "key": "133457799BBCDFF1",
+    "expected": {
+      "r.00.IP": "CC00CCFFF0AAF0AA",
+      "r.01.K": "1B02EFFC7072",
+      "r.01.E": "7A15557A1555",
+      "r.01.E_xor_K": "6117BA866527",
+      "r.01.S": "5C82B597",
+      "r.01.P": "234AA9BB",
+      "r.01.L": "F0AAF0AA",
+      "r.01.R": "EF4A6544",
+      "r.16.swap": "0A4CD99543423234",
+      "ciphertext": "85E813540F0AB405"
+    }
+  }
+}
