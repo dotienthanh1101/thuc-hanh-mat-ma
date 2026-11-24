@@ -1,5 +1,5 @@
 Vector: des-tham-chieu
-Nguồn: Vector tham chiếu từ Project 4: Learning about DES. Chưa có dữ liệu để xác nhận ví dụ DES trên bảng.
+Nguồn: Vector tham chiếu từ Project 4: Learning about DES của Lund University.
 
 ks = lịch sinh khóa, r = trạng thái mã hóa. Mọi giá trị đều ở hệ hex.
 

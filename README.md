@@ -9,17 +9,21 @@ python run_vectors.py
 python run_vectors.py --save
 python run_vectors.py aes-tuan-11
 python run_vectors.py des-tham-chieu
+python run_vectors.py des-sbox-bai-ghi
+python run_vectors.py aes-bai-ghi-1111
 ```
 
-Lệnh đầu in cả ba vector ra terminal. Thêm `--save` để ghi lại các log trong `results/`. Mã thoát là 1 nếu một mốc có đáp án bị sai. Có thể thêm vector vào `vectors.json` theo cấu trúc sẵn có. Với DES, mỗi bản rõ và khóa có 16 ký tự hex. Với AES-128, mỗi giá trị có 32 ký tự hex. Đặt các mốc đã biết trong `expected` bằng đúng nhãn dùng trong log.
+Lệnh đầu in cả năm vector ra terminal. Thêm `--save` để ghi lại các log trong `results/`. Mã thoát là 1 nếu một mốc có đáp án bị sai. Có thể thêm vector vào `vectors.json` theo cấu trúc sẵn có. Với DES, mỗi bản rõ và khóa có 16 ký tự hex. Với AES-128, mỗi giá trị có 32 ký tự hex. Đặt các mốc đã biết trong `expected` bằng đúng nhãn dùng trong log.
 
 | Vector | Nguồn | Kết quả nổi bật |
 | --- | --- | --- |
 | [AES tuần 11](results/aes-tuan-11.txt) | Đề bài cho P = 0x11 và K = 0x00 dưới dạng viết rút gọn. Thêm byte 00 bên trái cho đủ 128 bit. | K₁ = `62636363626363636263636362636363`, state cuối vòng 1 = `E0E138D9010000000100000001000000`, bản mã = `0410BEFCCDE6944B69DD007DEBE39A9D`. |
 | [AES tham chiếu](results/aes-fips197.txt) | FIPS 197, bản 2001, Phụ lục C.1 | Bản mã = `69C4E0D86A7B0430D8CDB78070B4C55A`. |
-| [DES tham chiếu](results/des-tham-chieu.txt) | Ví dụ công khai của Lund University. Đang chờ dữ liệu DES trên bảng để chạy đúng vector của lớp. | K₁ = `1B02EFFC7072`, L₁ = `F0AAF0AA`, R₁ = `EF4A6544`, bản mã = `85E813540F0AB405`. |
+| [DES tham chiếu](results/des-tham-chieu.txt) | Ví dụ công khai của Lund University. | K₁ = `1B02EFFC7072`, L₁ = `F0AAF0AA`, R₁ = `EF4A6544`, bản mã = `85E813540F0AB405`. |
+| [DES theo ví dụ S-box trong vở](results/des-sbox-bai-ghi.txt) | Vector tự xây dựng để nhóm đầu vào S₁ ở vòng 1 có hàng 1 và cột 11. | P = `0000000000000000`, K = `B0B0B0B0B0B0B0B0`, bản mã = `320CD08D36E0EDFB`. |
+| [AES theo ảnh bài làm](results/aes-bai-ghi-1111.txt) | Hai byte cuối của bản rõ là `11 11`, khóa toàn `00`. | State cuối vòng 1 = `E0E138D9E038D9E10100000001000000`, bản mã = `442758DF6DDA9EDB6BF1468A17B93FE5`. |
 
-`vectors.json` lưu các mốc kỳ vọng từ bài tính tay và tài liệu tham chiếu. Bản mã của AES tuần 11 được đối chiếu độc lập bằng OpenSSL. Nhãn PASS chỉ áp dụng cho các mốc có đáp án trong mục Đối chiếu. Phần trên của mỗi log là toàn bộ giá trị chương trình sinh ra.
+`vectors.json` lưu các mốc kỳ vọng từ bài tính tay và tài liệu tham chiếu. Bản mã của cả năm vector đã được đối chiếu độc lập bằng OpenSSL. Nhãn PASS chỉ áp dụng cho các mốc có đáp án trong mục Đối chiếu. Phần trên của mỗi log là toàn bộ giá trị chương trình sinh ra.
 
 ## DES ([des.py](des.py) và [des_tables.py](des_tables.py))
 
@@ -27,6 +31,8 @@ Lệnh đầu in cả ba vector ra terminal. Thêm `--save` để ghi lại các
 2. IP hoán vị khối bản rõ rồi tách thành L₀, R₀. Trong mỗi vòng, E mở rộng Rᵢ₋₁ từ 32 lên 48 bit rồi XOR với Kᵢ. Chia kết quả thành tám nhóm 6 bit. Hai bit ngoài xác định hàng, bốn bit giữa xác định cột S-box. Ghép tám kết quả 4 bit rồi hoán vị P.
 3. Gán Lᵢ = Rᵢ₋₁ và Rᵢ = Lᵢ₋₁ XOR đầu ra của P. Sau vòng 16, đổi thứ tự hai nửa thành R₁₆ ‖ L₁₆ rồi áp dụng FP.
 4. Trong log, `ks.01.K` là khóa vòng 1. `r.01.E_xor_K` là giá trị trước khi chia nhóm cho các S-box. `r.01.P` là đầu ra hàm Feistel và `r.01.L`, `r.01.R` là hai nửa sau vòng 1.
+
+Vở ghi cung cấp hàng `01` và cột `1011` ở nhóm S₁. Ghép hai bit ngoài với bốn bit giữa được `0 1011 1`, tức `0x17`. Với P toàn bit 0 thì IP và E(R₀) đều bằng 0. Chọn K = `B0B0B0B0B0B0B0B0` để sáu bit đầu của K₁ là `010111`. Vì vậy S₁ nhận đúng nhóm đó sau XOR và cho `1011` (hex `B`). Cặp P, K do người triển khai chọn để kiểm định ví dụ tra bảng. Vở ghi chỉ cung cấp bước tra S-box.
 
 ## AES-128 ([aes128.py](aes128.py))
 
